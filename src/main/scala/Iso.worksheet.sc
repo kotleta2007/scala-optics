@@ -1,4 +1,7 @@
 import monocle.Iso
+import monocle.macros.GenIso
+
+// Iso on custom classes
 
 case class Person(name: String, age: Int)
 
@@ -18,3 +21,11 @@ vectorToList.get(Vector(1, 2, 3))
 
 val stringToList = Iso[String, List[Char]](_.toList)(_.mkString)
 stringToList.modify(_.tail)("Hello")
+
+// Iso generation
+
+case class MyString(s: String)
+case class Foo()
+case object Bar
+
+GenIso[MyString, String].get(MyString("Hello"))
