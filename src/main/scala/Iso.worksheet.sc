@@ -29,3 +29,26 @@ case class Foo()
 case object Bar
 
 GenIso[MyString, String].get(MyString("Hello"))
+GenIso.unit[Foo].reverseGet(())
+GenIso.unit[Bar.type].reverseGet(())
+GenIso.fields[Person].get(Person("John", 42)) == ("John", 42)
+
+// .modify() and .replace()
+val victor = Person("Victor", 51)
+
+val increaseAge = personToTuple.modify{case (name, value) => (name, value + 1)}
+increaseAge(victor)
+
+val transformIntoCornelius = personToTuple.replace(("Cornelius", 100))
+transformIntoCornelius(victor)
+
+// Testing Isos
+val isoLaws       = monocle.law.IsoLaws(personToTuple)
+val personForTest = victor
+val tupleForTest  = isoLaws.iso.get(personForTest)
+
+val oneWayTest = isoLaws.roundTripOneWay(personForTest)
+assert(oneWayTest.lhs == oneWayTest.rhs)
+
+val otherWayTest = isoLaws.roundTripOtherWay(tupleForTest)
+assert(otherWayTest.lhs == otherWayTest.rhs)
